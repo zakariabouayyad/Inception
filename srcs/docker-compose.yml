@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx_c
+    ports:
+      - '443:443'
+    volumes:
+      - wordpress-vol:/var/www/html
+    env_file:
+      - ./.env
+    networks:
+      - mynet
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress_c
+    volumes:
+      - wordpress-vol:/var/www/html
+    env_file:
+      - ./.env
+    networks:
+      - mynet
+
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb_c
+    volumes:
+      - mariadb-vol:/var/lib/mysql
+    env_file:
+      - ./.env
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    name: mynet
+    driver: bridge
+
+volumes:
+  wordpress-vol:
+    name: wordpress-vol
+    driver: local
+    driver_opts:
+      type: 'none' 
+      device: '/home/zbouayya/data/wordpress'
+      o: 'bind'
+
+  mariadb-vol:
+    name: mariadb-vol
+    driver: local
+    driver_opts:
+      type: 'none' 
+      device: '/home/zbouayya/data/mariadb'
+      o: 'bind'
