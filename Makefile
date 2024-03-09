@@ -1,0 +1,1 @@
+all : docker compose -d .src/

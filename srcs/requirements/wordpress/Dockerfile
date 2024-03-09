@@ -1,15 +1,17 @@
 FROM debian:bullseye
 
-WORKDIR /var/www/html
+RUN apt-get update && apt install -y curl
 
-RUN apt update && apt upgrade -y
+RUN apt install -y php
 
-RUN apt install wget -y
+RUN apt install -y php-mysql
 
-RUN wget https://wordpress.org/latest.tar.gz
+RUN apt install -y php-fpm
 
-RUN tar -xzvf latest.tar.gz
+# RUN apt install -y mariadb-client
 
-RUN cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+RUN sed -i 's#listen = /run/php/php7.4-fpm.sock#listen = 0.0.0.0:9000#' /etc/php/7.4/fpm/pool.d/www.conf
 
-EXPOSE 9000
+COPY tools/script.sh .
+
+CMD ["bash" , "./script.sh"]

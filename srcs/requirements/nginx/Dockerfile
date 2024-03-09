@@ -1,6 +1,6 @@
 FROM debian:bullseye
 
-RUN apt-get update && apt upgrade -y
+RUN apt-get update -y
 
 RUN apt-get install -y nginx
 
@@ -16,6 +16,8 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 # Copy NGINX configuration file
 COPY conf/default /etc/nginx/sites-available/default
+
+RUN mkdir -p /run/nginx
 
 # Expose port 443 for HTTPS
 EXPOSE 443
