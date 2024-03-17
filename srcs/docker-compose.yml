@@ -15,6 +15,7 @@ services:
       - mynet
     depends_on:
       - wordpress
+    restart: on-failure
 
   wordpress:
     build: ./requirements/wordpress
@@ -28,6 +29,9 @@ services:
       - mynet
     depends_on:
       - mariadb
+      - redis
+      - ftp
+    restart: on-failure
 
   mariadb:
     build: ./requirements/mariadb
@@ -39,6 +43,71 @@ services:
       - ./.env
     networks:
       - mynet
+    restart: on-failure
+
+  redis:
+    build: ./requirements/bonus/redis
+    container_name: redis
+    image: redis
+    env_file:
+      - ./.env
+    networks:
+      - mynet
+    restart: on-failure
+
+  ftp:
+    build: ./requirements/bonus/ftp
+    container_name: ftp
+    image: ftp
+    volumes:
+      - wordpress:/home/zakaria/ftp/files
+    ports:
+      - '21:21'
+      - '20:20'
+    env_file:
+      - ./.env
+    networks:
+      - mynet
+    restart: on-failure
+
+  adminer:
+    build: ./requirements/bonus/adminer
+    container_name: adminer
+    image: adminer
+    volumes:
+      - wordpress:/var/www/html
+    ports:
+      - '80:80'
+    env_file:
+      - ./.env
+    networks:
+      - mynet
+    restart: on-failure
+
+  cadvisor:
+    build: ./requirements/bonus/cadvisor
+    container_name: cadvisor
+    image: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - '8080:8080'
+    networks:
+      - mynet
+    restart: on-failure
+
+  static_website:
+    build: ./requirements/bonus/static_website
+    container_name: static_website
+    image: static_website
+    ports:
+      - '3334:80'
+    networks:
+      - mynet
+    restart: on-failure
 
 networks:
   mynet:

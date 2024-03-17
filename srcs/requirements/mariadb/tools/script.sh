@@ -1,24 +1,22 @@
 service mariadb start
 
-# sleep 3
+sleep 2
 
-# create our table!
+# Create a new database if it doesn't exist
 mysql -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
 
-# creating a user who can manipulate the table
+# Create a new user with specified password
 mysql -e "CREATE USER IF NOT EXISTS \`${SQL_USER}\`@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
 
-# give all rights to the user
+# Grant all privileges on the database to the new user
 mysql -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO \`${SQL_USER}\`@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
 
-# chi hmaq ->> altering the password for the MySQL user 'root' when accessing from 'localhost', The ${SQL_ROOT_PASSWORD} is likely a placeholder that gets substituted with the actual password value from some external source or environment variable.
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${SQL_ROOT_PASSWORD}';"
+# Alter the password for the MySQL 'root' user when accessing from 'localhost'
+# The ${SQL_ROOT_PASSWORD} is the placeholder that gets substituted with the actual password value
+mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${SQL_ROOT_PASSWORD}';"
 
-# refresh all of this so that MySQL takes it into account.
-mysql -e -p$SQL_ROOT_PASSWORD "FLUSH PRIVILEGES;"
-
-# restart MySQL for all this to take effect
+# Restart MySQL service for the changes to take effect
 mysqladmin -u root -p$SQL_ROOT_PASSWORD shutdown
 
-# start the MySQL server
+# Start the MySQL server in safe mode, binding to all network interfaces and using port 3306
 mysqld_safe --bind 0.0.0.0 --port 3306

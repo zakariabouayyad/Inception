@@ -1,15 +1,21 @@
 server {
-    listen 443 ssl;
-    server_name zbouayya.42.fr;
+	listen 443 ssl;
+	server_name zbouayya.42.fr;
 
-    ssl_protocols TLSv1.2;
-    ssl_certificate /etc/nginx/ssl/nginx-selfsigned.crt;
-    ssl_certificate_key /etc/nginx/ssl/nginx-selfsigned.key;
+	ssl_protocols TLSv1.2;
+	ssl_certificate /etc/nginx/ssl/nginx-selfsigned.crt;
+	ssl_certificate_key /etc/nginx/ssl/nginx-selfsigned.key;
 
-        root /var/www/html;
-        index wp-login.php;
+	root /var/www/html;
+	index index.php;
 
-    location ~ \.php$ {
+	location /adminer {
+		index adminer.php
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass wordpress:9000;
+	}
+
+	location ~ \.php$ {
 		include snippets/fastcgi-php.conf;
 		fastcgi_pass wordpress:9000;
 	}
